@@ -1,5 +1,8 @@
 package exerciseOne;
 
+import javafx.application.Platform;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import utils.FileWriter;
 import utils.Stopwatch;
 
@@ -23,10 +26,14 @@ public class AllOneIsFittest {
     private final double endPm;
     private final double stepPm;
     private final int replicationScheme;                            // Replikationsschema
-    private final int crossOverMethod;                              // general or side specific
+    private final int recombinationMethod;                          // general or side specific
     private final int numberOfRunsToAverage;                        // Zahl der Läufe über die gerundet wird
     private final double acceptRate;                                // akzeptanzrate in Prozent
     private final int protectedGenesCount;
+    private final int s;
+    private ProgressBar progressBar;
+    private double progress;
+    private Label resultLabel;
 
     private final boolean initializeLikeCourse;                     // Initialisierung, wie vom Dozenten (oder von mir)
     private final ExecutorService pool;
@@ -38,7 +45,7 @@ public class AllOneIsFittest {
 
     private final Stopwatch stopwatch;
 
-    public AllOneIsFittest(int geneCnt, double initRate, int geneLen, int maxGenerations, double pc, double pm, int replicationScheme, int crossOverMethod, int numberOfRunsToAverage, boolean protectBest, double acceptRate, boolean initializeLikeCourse) {
+    public AllOneIsFittest(int geneCnt, double initRate, int geneLen, int maxGenerations, double pc, double pm, int replicationScheme, int recombinationMethod, int numberOfRunsToAverage, boolean protectBest, double acceptRate, boolean initializeLikeCourse, int s, ProgressBar progressBar, Label resultLabel) {
         this.geneCnt = geneCnt;
         this.initRate = initRate;
         this.geneLen = geneLen;
@@ -52,7 +59,7 @@ public class AllOneIsFittest {
         this.endPm = 0;
         this.stepPm = 0;
         this.replicationScheme = replicationScheme;
-        this.crossOverMethod = crossOverMethod;
+        this.recombinationMethod = recombinationMethod;
         this.numberOfRunsToAverage = numberOfRunsToAverage;
         this.acceptRate = acceptRate;
 
@@ -61,6 +68,11 @@ public class AllOneIsFittest {
         } else {
             this.protectedGenesCount = geneCnt;
         }
+
+        this.s = s;
+        this.progressBar = progressBar;
+        this.progress = 0;
+        this.resultLabel = resultLabel;
 
         this.initializeLikeCourse = initializeLikeCourse;
         this.pool = null;
@@ -74,7 +86,7 @@ public class AllOneIsFittest {
         start();
     }
 
-    public AllOneIsFittest(int geneCnt, double initRate, int geneLen, int maxGenerations, double startPc, double endPc, double stepPc, double startPm, double endPm, double stepPm, int replicationScheme, int crossOverMethod, int numberOfRunsToAverage, boolean protectBest, double acceptRate, boolean initializeLikeCourse, int numberOfThreads) {
+    public AllOneIsFittest(int geneCnt, double initRate, int geneLen, int maxGenerations, double startPc, double endPc, double stepPc, double startPm, double endPm, double stepPm, int replicationScheme, int recombinationMethod, int numberOfRunsToAverage, boolean protectBest, double acceptRate, boolean initializeLikeCourse, int numberOfThreads, int s, ProgressBar progressBar, Label resultLabel) {
         this.geneCnt = geneCnt;
         this.initRate = initRate;
         this.geneLen = geneLen;
@@ -88,7 +100,7 @@ public class AllOneIsFittest {
         this.endPm = endPm;
         this.stepPm = stepPm;
         this.replicationScheme = replicationScheme;
-        this.crossOverMethod = crossOverMethod;
+        this.recombinationMethod = recombinationMethod;
         this.numberOfRunsToAverage = numberOfRunsToAverage;
         this.acceptRate = acceptRate;
 
@@ -97,6 +109,11 @@ public class AllOneIsFittest {
         } else {
             this.protectedGenesCount = geneCnt;
         }
+
+        this.s = s;
+        this.progressBar = progressBar;
+        this.progress = 0;
+        this.resultLabel = resultLabel;
 
         this.initializeLikeCourse = initializeLikeCourse;
         this.threads = new ArrayList<>();
@@ -118,12 +135,15 @@ public class AllOneIsFittest {
 
         AllOneIsFittestTask task = new AllOneIsFittestTask(0, this.pc, this.pm);
         task.task();
+        progressBar.setProgress(1);
+        Controller.setRunning(false);
 
         this.overallNeededGenerations = task.getOverallNeededGenerations();
         this.maxFitness = task.getMaxFitness();
 
-        // print all results
-        printAllResults();
+        // print results
+        printResults(task);
+        // printAllResults();
     }
 
     public void startOptimization() {
@@ -142,6 +162,15 @@ public class AllOneIsFittest {
         }
     }
 
+    private void printResults(AllOneIsFittestTask bestTask) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                resultLabel.setText("\t\tBeste Ergebnisse bei:\t\npc: " + FileWriter.cleanupString(bestTask.getPc()) + "     pm: " + FileWriter.cleanupString(bestTask.getPm()) + "     Generationen: " + bestTask.getGener());
+            }
+        });
+    }
+
     private void printSomeResults(AllOneIsFittestTask task) {
         System.out.println("id: " + task.id);
         System.out.println("pm: " + task.pm);
@@ -157,7 +186,7 @@ public class AllOneIsFittest {
         System.out.println("geneCnt: " + geneLen);
         System.out.println("geneLen: " + geneCnt);
         System.out.println("initRate: " + initRate);
-        System.out.println("crossover-method: " + crossOverMethod);
+        System.out.println("crossover-method: " + recombinationMethod);
         System.out.println("replication-scheme: " + replicationScheme);
         System.out.println("number of runs: " + numberOfRunsToAverage);
         System.out.println("accept rate: " + acceptRate);
@@ -230,7 +259,7 @@ public class AllOneIsFittest {
                     }
 
                     // 2. Cross-Over
-                    crossGenes(crossOverMethod);
+                    crossGenes(recombinationMethod);
 
                     // -> check if max fitness is reached after the changed genes fitness got updated
                     sortArrayByFitness();
@@ -300,15 +329,22 @@ public class AllOneIsFittest {
             }
         }
 
-        private void crossGenes(int crossOverMethod) {
-            switch (crossOverMethod) {
+        private void crossGenes(int recombinationMethod) {
+            switch (recombinationMethod) {
                 case 1:
+                    // Crossover
                     for (int i = 0; i < (protectedGenesCount * pc); i++) {
                         crossTwoGenes(gene[ThreadLocalRandom.current().nextInt(protectedGenesCount)], gene[ThreadLocalRandom.current().nextInt(protectedGenesCount)], ThreadLocalRandom.current().nextInt(geneLen));
                     }
                     break;
+                case 2:
+                    // Front-rear
+                    for (int i = 0; i < (protectedGenesCount * pc); i++) {
+                        frontRearTwoGenes(gene[ThreadLocalRandom.current().nextInt(protectedGenesCount)], gene[ThreadLocalRandom.current().nextInt(protectedGenesCount)], ThreadLocalRandom.current().nextInt(geneLen));
+                    }
+                    break;
                 default:
-                    throw new IllegalArgumentException("no valid crossOverMethod: " + crossOverMethod);
+                    throw new IllegalArgumentException("no valid recombinationMethod: " + recombinationMethod);
             }
         }
 
@@ -326,6 +362,26 @@ public class AllOneIsFittest {
             gen1.setChanged(true);
             gen2.setChanged(true);
 
+        }
+
+        private void frontRearTwoGenes(Genome gen1, Genome gen2, int pos) {
+            if (pos > geneLen) {
+                throw new IllegalArgumentException("pos has to be lower than " + geneLen + " (\"geneLen\")");
+            }
+
+            // copy values of gen1 to make sure that gen2 can get values of gen1 after override
+            Genome gen1copy = new Genome(gen1);
+            Genome gen2copy = new Genome(gen2);
+
+            //Front-rear gen1
+            System.arraycopy(gen2.getValues(), pos, gen1.getValues(), 0, gen2.getGeneLen() - pos);
+            System.arraycopy(gen1copy.getValues(), 0, gen1.getValues(), gen1.getGeneLen() - pos, pos);
+            //Front-rear gen2
+            System.arraycopy(gen1.getValues(), pos, gen2.getValues(), 0, gen1.getGeneLen() - pos);
+            System.arraycopy(gen2copy.getValues(), 0, gen2.getValues(), gen2.getGeneLen() - pos, pos);
+
+            gen1.setChanged(true);
+            gen2.setChanged(true);
         }
 
         private void mutateGene() {
@@ -348,11 +404,13 @@ public class AllOneIsFittest {
         private void replicateGenes(int replicationScheme) {
             switch (replicationScheme) {
                 case 1:
+                    // 50x2
                     for (int i = 0; i < geneCnt / 2; i++) {
                         gene[i] = new Genome(gene[i + (geneCnt / 2)]);
                     }
                     break;
                 case 2:
+                    // rank based
                     Genome[] newGeneration = new Genome[geneCnt];
                     int chosenOne;
                     List<Integer> chosen = new ArrayList<>();
@@ -386,10 +444,9 @@ public class AllOneIsFittest {
 
         private double getPs(int i) {
             int n = geneCnt;
-            int s = 10;
             double res1 = ((2 - (double) s) / (double) n);
             double res2 = (2 * (double) i * ((double) s - 1));
-            double res3 = ((double)n * ((double)n - 1));
+            double res3 = ((double) n * ((double) n - 1));
             double res4 = res2 / res3;
 
             return res1 + res4;
@@ -424,10 +481,21 @@ public class AllOneIsFittest {
         private synchronized void checkFinished() {
             readyThreads++;
 
-            System.out.print("\b\b\b" + readyThreads);
-
+            System.out.print("\r" + readyThreads);
             assert threads != null;
+            progressBar.setProgress(progress += (1 / (double) threads.size()));
+
             if (readyThreads == threads.size()) {
+                AllOneIsFittestTask bestTask = threads.get(0);
+                for (AllOneIsFittestTask thread : threads) {
+                    if (thread.getGener() < bestTask.getGener()) {
+                        bestTask = thread;
+                    }
+                }
+
+                printResults(bestTask);
+
+                Controller.setRunning(false);
 
                 System.out.print("\nBefore writing:\t");
                 stopwatch.getTime();

@@ -47,7 +47,7 @@ public class FileWriter {
         write(stringBuilder.toString());
     }
 
-    private static String cleanupString(double value) {
+    public static String cleanupString(double value) {
         return String.valueOf(value).replaceAll(REGEX, "");
     }
 

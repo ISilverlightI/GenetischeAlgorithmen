@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="590.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="exerciseOne.Controller">
+    <children>
+        <Button fx:id="optimizationStartButton" layoutX="306.0" layoutY="480.0" mnemonicParsing="false" onAction="#optimizationStart" prefHeight="25.0" prefWidth="110.0" text="find best values" />
+        <ProgressBar fx:id="progressBar" layoutX="89.0" layoutY="516.0" prefHeight="18.0" prefWidth="405.0" progress="0.0" />
+        <RadioButton fx:id="protectBest" layoutX="247.0" layoutY="450.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="94.0" selected="true" text="protect best" />
+        <TextField fx:id="geneCnt" alignment="CENTER" layoutX="189.0" layoutY="100.0" prefHeight="25.0" prefWidth="65.0" text="200" />
+        <TextField fx:id="geneLen" alignment="CENTER" layoutX="189.0" layoutY="131.0" prefHeight="25.0" prefWidth="65.0" text="200" />
+        <TextField fx:id="initRate" alignment="CENTER" layoutX="189.0" layoutY="162.0" prefHeight="25.0" prefWidth="65.0" text="0.05" />
+        <TextField fx:id="maxGenerations" alignment="CENTER" layoutX="189.0" layoutY="194.0" prefHeight="25.0" prefWidth="65.0" text="3000" />
+        <TextField fx:id="numberOfRunsToAverage" alignment="CENTER" layoutX="189.0" layoutY="228.0" prefHeight="25.0" prefWidth="65.0" text="10" />
+        <Label layoutX="40.0" layoutY="102.0" prefHeight="17.0" prefWidth="117.0" text="Anzahl der Gene:" />
+        <Label layoutX="40.0" layoutY="133.0" prefHeight="17.0" prefWidth="117.0" text="Länge der Gene:" />
+        <Label layoutX="40.0" layoutY="164.0" prefHeight="17.0" prefWidth="117.0" text="Initialisierungsrate:" />
+        <Label layoutX="40.0" layoutY="196.0" prefHeight="17.0" prefWidth="133.0" text="maximale Generationen:" />
+        <Label layoutX="40.0" layoutY="230.0" prefHeight="17.0" prefWidth="100.0" text="Anzahl der Läufe:" />
+        <Label layoutX="148.0" layoutY="14.0" text="All one is fittest - Algorithm">
+            <font>
+                <Font size="24.0" />
+            </font>
+        </Label>
+        <ComboBox fx:id="recombinationMethod" layoutX="306.0" layoutY="373.0" prefHeight="25.0" prefWidth="168.0">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Crossover" />
+                    <String fx:value="Front-rear" />
+                </FXCollections>
+            </items>
+        </ComboBox>
+        <Label layoutX="148.0" layoutY="377.0" prefHeight="17.0" prefWidth="147.0" text="Rekombinationsmethode:" />
+        <Label layoutX="148.0" layoutY="412.0" prefHeight="17.0" prefWidth="147.0" text="Replikationsschema:" />
+        <ComboBox fx:id="replicationScheme" layoutX="306.0" layoutY="408.0" onAction="#showS" prefHeight="25.0" prefWidth="168.0">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="50x2" />
+                    <String fx:value="Rank based selection" />
+                </FXCollections>
+            </items>
+        </ComboBox>
+        <TextField fx:id="startPc" alignment="CENTER" layoutX="473.0" layoutY="195.0" prefHeight="25.0" prefWidth="65.0" text="0.5" />
+        <Label layoutX="324.0" layoutY="199.0" prefHeight="17.0" prefWidth="117.0" text="Start pc:" />
+        <Line endX="-52.0" endY="209.0" layoutX="346.0" layoutY="150.0" startX="-52.0" startY="-54.0" />
+        <TextField fx:id="endPc" alignment="CENTER" layoutX="473.0" layoutY="228.0" prefHeight="25.0" prefWidth="65.0" text="0.9" />
+        <TextField fx:id="stepPc" alignment="CENTER" layoutX="473.0" layoutY="262.0" prefHeight="25.0" prefWidth="65.0" text="0.02" />
+        <TextField fx:id="startPm" alignment="CENTER" layoutX="473.0" layoutY="98.0" prefHeight="25.0" prefWidth="65.0" text="0" />
+        <TextField fx:id="endPm" alignment="CENTER" layoutX="473.0" layoutY="130.0" prefHeight="25.0" prefWidth="65.0" text="0.03" />
+        <TextField fx:id="stepPm" alignment="CENTER" layoutX="473.0" layoutY="164.0" prefHeight="25.0" prefWidth="65.0" text="0.002" />
+        <Label layoutX="324.0" layoutY="232.0" prefHeight="17.0" prefWidth="117.0" text="End pc:" />
+        <Label layoutX="324.0" layoutY="266.0" prefHeight="17.0" prefWidth="117.0" text="Schrittweite pc:" />
+        <Label layoutX="324.0" layoutY="102.0" prefHeight="17.0" prefWidth="117.0" text="Start pm:" />
+        <Label layoutX="324.0" layoutY="134.0" prefHeight="17.0" prefWidth="133.0" text="End pm:" />
+        <Label layoutX="324.0" layoutY="168.0" prefHeight="17.0" prefWidth="100.0" text="Schrittweite pm:" />
+        <TextField fx:id="numberOfThreads" alignment="CENTER" layoutX="473.0" layoutY="329.0" prefHeight="25.0" prefWidth="65.0" text="5" />
+        <Label layoutX="324.0" layoutY="333.0" prefHeight="17.0" prefWidth="100.0" text="Threads:" />
+        <TextField fx:id="pm" alignment="CENTER" layoutX="190.0" layoutY="296.0" prefHeight="25.0" prefWidth="65.0" text="0.006" />
+        <Label layoutX="41.0" layoutY="300.0" prefHeight="17.0" prefWidth="100.0" text="Mutationsrate:" />
+        <TextField fx:id="pc" alignment="CENTER" layoutX="190.0" layoutY="329.0" prefHeight="25.0" prefWidth="65.0" text="0.9" />
+        <Label layoutX="41.0" layoutY="333.0" prefHeight="17.0" prefWidth="117.0" text="Rekombinationsrate:" />
+        <Line endX="184.5" layoutX="109.0" layoutY="274.0" startX="-68.0" />
+        <Label fx:id="resultLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="76.0" layoutY="543.0" prefHeight="35.0" prefWidth="437.0" />
+        <Line endX="184.5" layoutX="362.0" layoutY="308.0" startX="-68.0" />
+        <Label fx:id="sLabel" layoutX="495.0" layoutY="372.0" prefHeight="17.0" prefWidth="22.0" text="s:" visible="false" />
+        <TextField fx:id="sValue" alignment="CENTER" layoutX="515.0" layoutY="368.0" prefHeight="25.0" prefWidth="65.0" text="2" visible="false" />
+      <Button fx:id="normalStartButton" layoutX="167.0" layoutY="480.0" mnemonicParsing="false" onAction="#normalStart" prefHeight="25.0" prefWidth="110.0" text="normal run" />
+    </children>
+</AnchorPane>

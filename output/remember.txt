@@ -1,5 +1,14 @@
-Plot 1:		-> ranked based - s=2 | crossover | protectBest: true
-Plot 2:		-> ranked based - s=2 | crossover | protectBest: false
-Plot 3:		-> 50x2 | crossover | protectBest: true
-Plot 4:		-> 50x2 | crossover | protectBest: false
-Plot 5a:	-> ranked based - s=10 | crossover | protectBest: true
+Plot 1:		-> ranked based - s=2 | crossover | protectBest: true       -->     pc: 0.84 | pm: 0.004 | gener: 128 | 04:14 min
+Plot 2:		-> ranked based - s=2 | crossover | protectBest: false      -->     pc: 0.88 | pm: 0.004 | gener: 128 | 04:14 min
+Plot 3:		-> 50x2 | crossover | protectBest: true                     -->     pc: 0.88 | pm: 0.004 | gener: 93 | 3:05 min
+Plot 4:		-> 50x2 | crossover | protectBest: false                    -->     pc: 0.88 | pm: 0.006 | gener: 94 | 3:36 min
+Plot 5a:	-> ranked based - s=10 | crossover | protectBest: true      -->     pc: 0.88 | pm: 0.01 | gener: 57 | 2:23 min
+Plot 5b:    -> rank based - s=10 | front-rear | protectBest: true       -->     pc: 0.86 | pm: 0.004 | gener: 35 | 2:00 min
+
+Gnu-Plots:
+    set pm3d at bs
+    set grid
+    set label 1 "pm"  at graph 0.5,-0.1,-0.6 font "Times,18"
+    set label 2 "pc"  at graph -0.1,0.5,-0.6 font "Times,18"
+    set label 3 "gener"  at graph -0.3,-0.2,0.5 font "Times,18"
+    splot "{Plot 1-5}"
