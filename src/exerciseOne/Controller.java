@@ -3,8 +3,6 @@ package exerciseOne;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-import java.util.HashMap;
-
 public class Controller {
 
     @FXML
@@ -51,7 +49,6 @@ public class Controller {
     private ProgressBar progressBar;
 
     private static boolean running = false;
-    //private static String text;
 
     @FXML
     public void normalStart() {
@@ -162,16 +159,6 @@ public class Controller {
         }
     }
 
-    /*
-        @FXML
-        public void printResult() {
-            this.resultLabel.setText(text);
-        }
-
-        public static void setText(String string) {
-            text = string;
-        }
-    */
     public static void setRunning(boolean value) {
         running = value;
     }
