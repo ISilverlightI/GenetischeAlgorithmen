@@ -1,4 +1,4 @@
-package exerciseOne;
+package exerciseTwo;
 
 import javafx.application.Platform;
 import javafx.scene.control.Label;
@@ -7,12 +7,14 @@ import utils.FileWriter;
 import utils.Print;
 import utils.Stopwatch;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class AllOneIsFittest {
+public class TravellingSalesman {
 
     private final int geneCnt;                                      // Anzahl der Gene
     private final double initRate;                                  // Initiationsrate
@@ -38,7 +40,7 @@ public class AllOneIsFittest {
 
     private final boolean initializeLikeCourse;                     // Initialisierung, wie vom Dozenten (oder von mir)
     private final ExecutorService pool;
-    private final ArrayList<AllOneIsFittestTask> threads;           // besitzt alle threads beim Multithreading
+    private final ArrayList<TravellingSalesmanTask> threads;        // besitzt alle threads beim Multithreading
     private volatile int readyThreads;                              // threads that finished
 
     private int overallNeededGenerations;                           // alle Generationen zusammen
@@ -46,7 +48,7 @@ public class AllOneIsFittest {
 
     private final Stopwatch stopwatch;
 
-    public AllOneIsFittest(int geneCnt, double initRate, int geneLen, int maxGenerations, double pc, double pm, int replicationScheme, int recombinationMethod, int numberOfRunsToAverage, boolean protectBest, double acceptRate, boolean initializeLikeCourse, int s, ProgressBar progressBar, Label resultLabel) {
+    public TravellingSalesman(int geneCnt, double initRate, int geneLen, int maxGenerations, double pc, double pm, int replicationScheme, int recombinationMethod, int numberOfRunsToAverage, boolean protectBest, double acceptRate, boolean initializeLikeCourse, int s, ProgressBar progressBar, Label resultLabel) {
         this.geneCnt = geneCnt;
         this.initRate = initRate;
         this.geneLen = geneLen;
@@ -87,7 +89,7 @@ public class AllOneIsFittest {
         start();
     }
 
-    public AllOneIsFittest(int geneCnt, double initRate, int geneLen, int maxGenerations, double startPc, double endPc, double stepPc, double startPm, double endPm, double stepPm, int replicationScheme, int recombinationMethod, int numberOfRunsToAverage, boolean protectBest, double acceptRate, boolean initializeLikeCourse, int numberOfThreads, int s, ProgressBar progressBar, Label resultLabel) {
+    public TravellingSalesman(int geneCnt, double initRate, int geneLen, int maxGenerations, double startPc, double endPc, double stepPc, double startPm, double endPm, double stepPm, int replicationScheme, int recombinationMethod, int numberOfRunsToAverage, boolean protectBest, double acceptRate, boolean initializeLikeCourse, int numberOfThreads, int s, ProgressBar progressBar, Label resultLabel) {
         this.geneCnt = geneCnt;
         this.initRate = initRate;
         this.geneLen = geneLen;
@@ -134,10 +136,10 @@ public class AllOneIsFittest {
 
     public void start() {
 
-        AllOneIsFittestTask task = new AllOneIsFittestTask(0, this.pc, this.pm);
+        TravellingSalesmanTask task = new TravellingSalesmanTask(0, this.pc, this.pm);
         task.task();
         progressBar.setProgress(1);
-        Controller.setRunning(false);
+        //Controller.setRunning(false);
 
         this.overallNeededGenerations = task.getOverallNeededGenerations();
         this.maxFitness = task.getMaxFitness();
@@ -155,7 +157,7 @@ public class AllOneIsFittest {
             pm = 0;
             for (this.pm = this.startPm; this.pm <= (this.endPm); this.pm += this.stepPm) {
 
-                threads.add(new AllOneIsFittestTask(counter, pc, pm));
+                threads.add(new TravellingSalesmanTask(counter, pc, pm));
                 pool.execute(threads.get(counter));
 
                 counter++;
@@ -163,16 +165,16 @@ public class AllOneIsFittest {
         }
     }
 
-    private void printResults(AllOneIsFittestTask bestTask) {
+    private void printResults(TravellingSalesmanTask bestTask) {
         Platform.runLater(() -> resultLabel.setText("\t\tBeste Ergebnisse bei:\t\npc: " + FileWriter.cleanupString(bestTask.getPc()) + "     pm: " + FileWriter.cleanupString(bestTask.getPm()) + "     Generationen: " + bestTask.getGener()));
     }
 
-    public class AllOneIsFittestTask implements Runnable {
+    public class TravellingSalesmanTask implements Runnable {
 
         private final int id;
+
         private final double pc;
         private final double pm;
-
         private Genome[] gene;
 
         double[] psKum;
@@ -180,10 +182,10 @@ public class AllOneIsFittest {
         private int generation;                                         // aktuelle Generation
 
         private int overallNeededGenerations;                           // alle Generationen zusammen
+
         private int maxFitness;                                         // maximal erreichte Fitness
         private int gener;                                              // benötigte Generationen im durchschnitt
-
-        public AllOneIsFittestTask(int id, double pc, double pm) {
+        public TravellingSalesmanTask(int id, double pc, double pm) {
             this.id = id;
             this.pc = pc;
             this.pm = pm;
@@ -217,7 +219,7 @@ public class AllOneIsFittest {
                     initializeForEach();
                 }
 
-            Print.printRunsStartFitness(i, gene);
+                // Print.printRunsStartFitness(i, gene);
 
                 do {
                     // set generation
@@ -247,7 +249,7 @@ public class AllOneIsFittest {
                     // loop until max fitness or max generations is reached
                 } while (generation < maxGenerations);
 
-                Print.printGenerationsMaxFitness(generation, gene, geneCnt);
+                // Print.printGenerationsMaxFitness(generation, gene, geneCnt);
 
                 overallNeededGenerations += generation;
                 updateOverallMaxFitness();
@@ -440,7 +442,7 @@ public class AllOneIsFittest {
             return maxFitness;
         }
 
-        public double getId() {
+        public int getId() {
             return id;
         }
 
@@ -464,8 +466,8 @@ public class AllOneIsFittest {
             progressBar.setProgress(progress += (1 / (double) threads.size()));
 
             if (readyThreads == threads.size()) {
-                AllOneIsFittestTask bestTask = threads.get(0);
-                for (AllOneIsFittestTask thread : threads) {
+                TravellingSalesmanTask bestTask = threads.get(0);
+                for (TravellingSalesmanTask thread : threads) {
                     if (thread.getGener() < bestTask.getGener()) {
                         bestTask = thread;
                     }
@@ -473,12 +475,12 @@ public class AllOneIsFittest {
 
                 printResults(bestTask);
 
-                Controller.setRunning(false);
+                //Controller.setRunning(false);
 
                 System.out.print("\nBefore writing:\t");
                 stopwatch.getTime();
 
-                FileWriter.writeAllOneIsFittest(threads);
+                FileWriter.writeTravellingSalesman(threads);
 
                 System.out.print("\nAfter writing:\t");
                 stopwatch.getTime();
@@ -487,6 +489,5 @@ public class AllOneIsFittest {
                 pool.shutdown();
             }
         }
-
     }
 }

@@ -1,6 +1,8 @@
 package utils;
 
 import exerciseOne.AllOneIsFittest;
+import exerciseOne.AllOneIsFittest.AllOneIsFittestTask;
+import exerciseTwo.TravellingSalesman.TravellingSalesmanTask;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,12 +26,12 @@ public class FileWriter {
         }
     }
 
-    public static void write(ArrayList<AllOneIsFittest.AllOneIsFittestTask> list) {
+    public static void writeAllOneIsFittest(ArrayList<AllOneIsFittestTask> list) {
         StringBuilder stringBuilder = new StringBuilder(10000);
 
         double lastPc = 0;
 
-        for (AllOneIsFittest.AllOneIsFittestTask allOneIsFittestTask : list) {
+        for (AllOneIsFittestTask allOneIsFittestTask : list) {
             if(lastPc != allOneIsFittestTask.getPc()){
                 if (lastPc != 0){
                     stringBuilder.append("\n");
@@ -45,6 +47,10 @@ public class FileWriter {
         }
 
         write(stringBuilder.toString());
+    }
+
+    public static void writeTravellingSalesman(ArrayList<TravellingSalesmanTask> list) {
+        //Todo: doSomeThings
     }
 
     public static String cleanupString(double value) {

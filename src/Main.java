@@ -1,5 +1,3 @@
-package exerciseOne;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,17 +6,26 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
+    public static void main(String[] args) {
+
+        launch(args);
+
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("../sample/ui.fxml"));
+        startExerciseOne(primaryStage);
+        startExerciseTwo();
+    }
+
+    public void startExerciseOne(Stage primaryStage) throws Exception {
+        Parent root = FXMLLoader.load(getClass().getResource("exerciseOne/sample/ui.fxml"));
         primaryStage.setTitle("Genetische Algorithmen");
         primaryStage.setScene(new Scene(root, 600, 590));
         primaryStage.show();
     }
 
-    public static void main(String[] args) {
-
-        launch(args);
+    private void startExerciseTwo() {
 
     }
 

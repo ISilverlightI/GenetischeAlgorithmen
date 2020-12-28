@@ -11,4 +11,6 @@ Gnu-Plots:
     set label 1 "pm"  at graph 0.5,-0.1,-0.6 font "Times,18"
     set label 2 "pc"  at graph -0.1,0.5,-0.6 font "Times,18"
     set label 3 "gener"  at graph -0.3,-0.2,0.5 font "Times,18"
+
+    cd 'C:\Users\janro\IdeaProjects\GenetischeAlgorithmen\output'
     splot "{Plot 1-5}"
