@@ -3,12 +3,11 @@ package exerciseTwo;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import utils.FileWriter;
-import utils.Print;
-import utils.Stopwatch;
+import utils.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,8 +15,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class TravellingSalesman {
 
+    public final double[][] distanceArray;
     private final int geneCnt;                                      // Anzahl der Gene
-    private final double initRate;                                  // Initiationsrate
     private final int geneLen;                                      // Länge der Gene
     private final int maxGenerations;                               // Maximalzahl der Generationen, danach Abbruch
     private double pc;                                              // Rekombinationsrate
@@ -31,27 +30,26 @@ public class TravellingSalesman {
     private final int replicationScheme;                            // Replikationsschema
     private final int recombinationMethod;                          // general or side specific
     private final int numberOfRunsToAverage;                        // Zahl der Läufe über die gerundet wird
-    private final double acceptRate;                                // akzeptanzrate in Prozent
     private final int protectedGenesCount;
     private final int s;
     private final ProgressBar progressBar;
     private double progress;
     private final Label resultLabel;
 
-    private final boolean initializeLikeCourse;                     // Initialisierung, wie vom Dozenten (oder von mir)
     private final ExecutorService pool;
     private final ArrayList<TravellingSalesmanTask> threads;        // besitzt alle threads beim Multithreading
     private volatile int readyThreads;                              // threads that finished
 
     private int overallNeededGenerations;                           // alle Generationen zusammen
-    private int maxFitness;                                         // maximal erreichte Fitness
+    private double maxFitness;                                      // maximal erreichte Fitness
 
     private final Stopwatch stopwatch;
 
-    public TravellingSalesman(int geneCnt, double initRate, int geneLen, int maxGenerations, double pc, double pm, int replicationScheme, int recombinationMethod, int numberOfRunsToAverage, boolean protectBest, double acceptRate, boolean initializeLikeCourse, int s, ProgressBar progressBar, Label resultLabel) {
+    public TravellingSalesman(String inputMap, int geneCnt, int maxGenerations, double pc, double pm, int replicationScheme, int recombinationMethod, int numberOfRunsToAverage, boolean protectBest, int s, ProgressBar progressBar, Label resultLabel) throws Exception {
+        distanceArray = ReadFile.getDistanceArray(inputMap);
+
         this.geneCnt = geneCnt;
-        this.initRate = initRate;
-        this.geneLen = geneLen;
+        this.geneLen = distanceArray.length;
         this.maxGenerations = maxGenerations;
         this.pc = pc;
         this.startPc = 0;
@@ -64,7 +62,6 @@ public class TravellingSalesman {
         this.replicationScheme = replicationScheme;
         this.recombinationMethod = recombinationMethod;
         this.numberOfRunsToAverage = numberOfRunsToAverage;
-        this.acceptRate = acceptRate;
 
         if (protectBest) {
             this.protectedGenesCount = geneCnt - 1;
@@ -77,7 +74,6 @@ public class TravellingSalesman {
         this.progress = 0;
         this.resultLabel = resultLabel;
 
-        this.initializeLikeCourse = initializeLikeCourse;
         this.pool = null;
         this.threads = null;
 
@@ -89,10 +85,11 @@ public class TravellingSalesman {
         start();
     }
 
-    public TravellingSalesman(int geneCnt, double initRate, int geneLen, int maxGenerations, double startPc, double endPc, double stepPc, double startPm, double endPm, double stepPm, int replicationScheme, int recombinationMethod, int numberOfRunsToAverage, boolean protectBest, double acceptRate, boolean initializeLikeCourse, int numberOfThreads, int s, ProgressBar progressBar, Label resultLabel) {
+    public TravellingSalesman(String inputMap, int geneCnt, int maxGenerations, double startPc, double endPc, double stepPc, double startPm, double endPm, double stepPm, int replicationScheme, int recombinationMethod, int numberOfRunsToAverage, boolean protectBest, int numberOfThreads, int s, ProgressBar progressBar, Label resultLabel) throws Exception {
+        distanceArray = ReadFile.getDistanceArray(inputMap);
+
         this.geneCnt = geneCnt;
-        this.initRate = initRate;
-        this.geneLen = geneLen;
+        this.geneLen = distanceArray.length;
         this.maxGenerations = maxGenerations;
         this.pc = 0;
         this.startPc = startPc;
@@ -105,7 +102,6 @@ public class TravellingSalesman {
         this.replicationScheme = replicationScheme;
         this.recombinationMethod = recombinationMethod;
         this.numberOfRunsToAverage = numberOfRunsToAverage;
-        this.acceptRate = acceptRate;
 
         if (protectBest) {
             this.protectedGenesCount = geneCnt - 1;
@@ -118,7 +114,6 @@ public class TravellingSalesman {
         this.progress = 0;
         this.resultLabel = resultLabel;
 
-        this.initializeLikeCourse = initializeLikeCourse;
         this.threads = new ArrayList<>();
         if (numberOfThreads == 0) {
             this.pool = null;
@@ -141,12 +136,11 @@ public class TravellingSalesman {
         progressBar.setProgress(1);
         //Controller.setRunning(false);
 
-        this.overallNeededGenerations = task.getOverallNeededGenerations();
-        this.maxFitness = task.getMaxFitness();
+        Arrays.sort(task.genes, Collections.reverseOrder());
 
         // print results
-        printResults(task);
-        // Print.printAllResults(overallNeededGenerations, numberOfRunsToAverage, pm, pc, geneLen, geneCnt, initRate, recombinationMethod, replicationScheme, acceptRate, maxFitness);
+        // printResults(task);
+        Print.printAllResults(task.getOverallNeededGenerations(), numberOfRunsToAverage, task.pm, task.pc, geneLen, geneCnt, recombinationMethod, replicationScheme, task.genes[geneCnt - 1].getFitness(), task.genes[geneCnt - 1].getRoute());
     }
 
     public void startOptimization() {
@@ -175,7 +169,7 @@ public class TravellingSalesman {
 
         private final double pc;
         private final double pm;
-        private Genome[] gene;
+        private Genome[] genes;
 
         double[] psKum;
 
@@ -183,21 +177,22 @@ public class TravellingSalesman {
 
         private int overallNeededGenerations;                           // alle Generationen zusammen
 
-        private int maxFitness;                                         // maximal erreichte Fitness
+        private double maxFitness;                                      // maximal erreichte Fitness
         private int gener;                                              // benötigte Generationen im durchschnitt
+
         public TravellingSalesmanTask(int id, double pc, double pm) {
             this.id = id;
             this.pc = pc;
             this.pm = pm;
 
-            this.gene = new Genome[geneCnt];
+            this.genes = new Genome[geneCnt];
 
             if (replicationScheme == 2)
                 psKum = generatePsKum();
 
             this.generation = 0;
             this.overallNeededGenerations = 0;
-            this.maxFitness = 0;
+            this.maxFitness = -1;
             this.gener = 0;
         }
 
@@ -213,13 +208,11 @@ public class TravellingSalesman {
         private void task() {
             for (int i = 0; i < numberOfRunsToAverage; i++) {
 
-                if (initializeLikeCourse) {
-                    initializeForAll();
-                } else {
-                    initializeForEach();
-                }
+                //System.out.println("Run: " + (i+1) + " of " + numberOfRunsToAverage);
 
-                // Print.printRunsStartFitness(i, gene);
+                initializeGenes();
+
+                // Print.printRunsStartFitness(i, genes);
 
                 do {
                     // set generation
@@ -228,9 +221,9 @@ public class TravellingSalesman {
                     // 1. Mutate
                     mutateGene();
 
-                    // -> sort array with genes and check if max fitness is reached (fitness got automatically updated with it's mutation)
-                    Arrays.sort(gene);
-                    if (!(gene[geneCnt - 1].getFitness() < (geneLen * acceptRate))) {
+                    // -> sort array with genes and check if fitness is minimal (fitness got automatically updated with it's mutation)
+                    Arrays.sort(genes, Collections.reverseOrder());
+                    if ((genes[geneCnt - 1].getFitness() <= 41.66/*geneLen*/)) {
                         break;
                     }
 
@@ -239,12 +232,14 @@ public class TravellingSalesman {
 
                     // -> check if max fitness is reached after the changed genes fitness got updated
                     sortArrayByFitness();
-                    if (!(gene[geneCnt - 1].getFitness() < (geneLen * acceptRate))) {
+                    if ((genes[geneCnt - 1].getFitness() <= 41.66/*geneLen*/)) {
                         break;
                     }
 
                     // 3. Replicate
                     replicateGenes(replicationScheme);
+
+                    Arrays.sort(genes, Collections.reverseOrder());
 
                     // loop until max fitness or max generations is reached
                 } while (generation < maxGenerations);
@@ -253,70 +248,50 @@ public class TravellingSalesman {
 
                 overallNeededGenerations += generation;
                 updateOverallMaxFitness();
+
+                //System.out.println("actual best fitness: " + genes[geneCnt - 1].getFitness()+"\n");
             }
             gener = (overallNeededGenerations / numberOfRunsToAverage);
         }
 
-        private void initializeForEach() {
+        private void initializeGenes() {
             for (int i = 0; i < geneCnt; i++) {
-                gene[i] = new Genome(geneLen, initRate);
+                genes[i] = new Genome(distanceArray);
             }
-
             generation = 0;
         }
 
-        private void initializeForAll() {
-            for (int i = 0; i < geneCnt; i++) {
-                gene[i] = new Genome(geneLen);
-            }
+        private void swapGenePos(Genome gen, int pos1, int pos2) {
 
-            int geneIndex;
-            int genePos;
-            for (int i = 0; i < (geneCnt * geneLen * initRate); i++) {
-                geneIndex = ThreadLocalRandom.current().nextInt(geneCnt);
-                genePos = ThreadLocalRandom.current().nextInt(geneLen);
-                setGenePos(gene[geneIndex], genePos, 1);
-            }
+            int pos1copy = gen.getRoute()[pos1];
+            gen.getRoute()[pos1] = gen.getRoute()[pos2];
+            gen.getRoute()[pos2] = pos1copy;
 
-            generation = 0;
-        }
-
-        private void setGenePos(Genome gen, int pos, int value) {
-            switch (value) {
-                case 0:
-                    gen.getValues()[pos] = 0;
-                    gen.setChanged(true);
-                    break;
-                case 1:
-                    gen.getValues()[pos] = 1;
-                    gen.setChanged(true);
-                    break;
-                case -1:
-                    if (gen.getValues()[pos] == 1) {
-                        gen.getValues()[pos] = 0;
-                        gen.changeFitness(-1);
-                    } else {
-                        gen.getValues()[pos] = 1;
-                        gen.changeFitness(+1);
-                    }
-                    break;
-                default:
-                    throw new IllegalArgumentException("Value has to get one of the following values: 0, 1, -1");
-            }
+            gen.setChanged(true);
         }
 
         private void crossGenes(int recombinationMethod) {
             switch (recombinationMethod) {
                 case 1:
-                    // Crossover
-                    for (int i = 0; i < (protectedGenesCount * pc); i++) {
-                        crossTwoGenes(gene[ThreadLocalRandom.current().nextInt(protectedGenesCount)], gene[ThreadLocalRandom.current().nextInt(protectedGenesCount)], ThreadLocalRandom.current().nextInt(geneLen));
+                    // greedy Crossover
+                    Genome[] newGenes = new Genome[geneCnt];
+                    // save best - to get sure, that we dont miss it -> gets overwritten if protectBest=false
+                    newGenes[geneCnt - 1] = genes[geneCnt - 1];
+
+                    for (int i = 0; i < protectedGenesCount; i++) {
+                        if (i < (protectedGenesCount * pc)) {
+                            newGenes[i] = new Genome(crossTwoGenes(genes[ThreadLocalRandom.current().nextInt(protectedGenesCount)], genes[ThreadLocalRandom.current().nextInt(protectedGenesCount)]), distanceArray);
+                        } else {
+                            newGenes[i] = genes[ThreadLocalRandom.current().nextInt(geneCnt)];
+                        }
                     }
+
+                    genes = newGenes;
                     break;
                 case 2:
                     // Front-rear
                     for (int i = 0; i < (protectedGenesCount * pc); i++) {
-                        frontRearTwoGenes(gene[ThreadLocalRandom.current().nextInt(protectedGenesCount)], gene[ThreadLocalRandom.current().nextInt(protectedGenesCount)], ThreadLocalRandom.current().nextInt(geneLen));
+                        frontRearTwoGenes(genes[ThreadLocalRandom.current().nextInt(protectedGenesCount)], genes[ThreadLocalRandom.current().nextInt(protectedGenesCount)], ThreadLocalRandom.current().nextInt(geneLen));
                     }
                     break;
                 default:
@@ -324,20 +299,61 @@ public class TravellingSalesman {
             }
         }
 
-        private void crossTwoGenes(Genome gen1, Genome gen2, int pos) {
-            if (pos > geneLen) {
-                throw new IllegalArgumentException("pos has to be lower than " + geneLen + " (\"geneLen\")");
+        private int[] crossTwoGenes(Genome gen1, Genome gen2) {
+
+            int[] newRoute = new int[gen1.getGeneLen()];
+
+            //start with first city of gen1
+            int startCity = gen1.getRoute()[0];
+            int nextCity1;
+            int nextCity2;
+
+            //save first in new routes list
+            newRoute[0] = startCity;
+
+            for (int i = 1; i < newRoute.length; i++) {
+
+                nextCity1 = findNextViableCity(gen1.getRoute(), startCity, newRoute, i);
+                nextCity2 = findNextViableCity(gen2.getRoute(), startCity, newRoute, i);
+
+                if (distanceArray[startCity][nextCity1] < distanceArray[startCity][nextCity2]) {
+                    newRoute[i] = nextCity1;
+                } else {
+                    newRoute[i] = nextCity2;
+                }
+                startCity = newRoute[i];
             }
 
-            // copy values of gen1 to make sure that gen2 can get values of gen1 after override
-            Genome gen1copy = new Genome(gen1);
+            return newRoute;
+        }
 
-            System.arraycopy(gen2.getValues(), pos, gen1.getValues(), pos, gen1.getGeneLen() - pos);
-            System.arraycopy(gen1copy.getValues(), pos, gen2.getValues(), pos, gen1.getGeneLen() - pos);
+        private int findNextViableCity(int[] route, int city, int[] newRoute, int upperBound) {
+            int nextCity;
+            // go find next city of parent 1
+            nextCity = findNextCity(route, city);
+            //search until u got a city, that's not in the new routes
+            while (ArrayUtils.contains(newRoute, nextCity, upperBound)) {
+                nextCity = findNextCity(route, nextCity);
+            }
+            return nextCity;
+        }
 
-            gen1.setChanged(true);
-            gen2.setChanged(true);
+        private int findNextCity(int[] route, int searchCity) {
+            int index = findIndexOf(route, searchCity);
+            if (index + 1 < route.length) {
+                return route[index + 1];
+            } else {
+                return route[0];
+            }
+        }
 
+        private int findIndexOf(int[] array, int value) {
+            for (int i = 0; i < array.length; i++) {
+                if (array[i] == value) {
+                    return i;
+                }
+            }
+            return -1;
         }
 
         private void frontRearTwoGenes(Genome gen1, Genome gen2, int pos) {
@@ -350,11 +366,11 @@ public class TravellingSalesman {
             Genome gen2copy = new Genome(gen2);
 
             //Front-rear gen1
-            System.arraycopy(gen2.getValues(), pos, gen1.getValues(), 0, gen2.getGeneLen() - pos);
-            System.arraycopy(gen1copy.getValues(), 0, gen1.getValues(), gen1.getGeneLen() - pos, pos);
+            System.arraycopy(gen2.getRoute(), pos, gen1.getRoute(), 0, gen2.getGeneLen() - pos);
+            System.arraycopy(gen1copy.getRoute(), 0, gen1.getRoute(), gen1.getGeneLen() - pos, pos);
             //Front-rear gen2
-            System.arraycopy(gen1.getValues(), pos, gen2.getValues(), 0, gen1.getGeneLen() - pos);
-            System.arraycopy(gen2copy.getValues(), 0, gen2.getValues(), gen2.getGeneLen() - pos, pos);
+            System.arraycopy(gen1.getRoute(), pos, gen2.getRoute(), 0, gen1.getGeneLen() - pos);
+            System.arraycopy(gen2copy.getRoute(), 0, gen2.getRoute(), gen2.getGeneLen() - pos, pos);
 
             gen1.setChanged(true);
             gen2.setChanged(true);
@@ -362,30 +378,40 @@ public class TravellingSalesman {
 
         private void mutateGene() {
             for (int i = 0; i < (protectedGenesCount * geneLen * pm); i++) {
-                setGenePos(gene[ThreadLocalRandom.current().nextInt(protectedGenesCount)], ThreadLocalRandom.current().nextInt(geneLen), -1);
+                swapGenePos(genes[ThreadLocalRandom.current().nextInt(protectedGenesCount)], ThreadLocalRandom.current().nextInt(geneLen), ThreadLocalRandom.current().nextInt(geneLen));
             }
         }
 
         private void updateFitness() {
             for (int i = 0; i < geneCnt; i++) {
-                gene[i].updateFitness();
+                genes[i].updateFitness();
             }
         }
 
         private void sortArrayByFitness() {
             updateFitness();
-            Arrays.sort(gene);
+            Arrays.sort(genes, Collections.reverseOrder());
         }
 
         private void replicateGenes(int replicationScheme) {
             switch (replicationScheme) {
+                case 0:
+                    break;
                 case 1:
-                    // 50x2
+                    // 2x50
+                    Genome best1 = genes[geneCnt - 1];
+                    Genome best2 = genes[geneCnt - 2];
                     for (int i = 0; i < geneCnt / 2; i++) {
-                        gene[i] = new Genome(gene[i + (geneCnt / 2)]);
+                        genes[i] = new Genome(genes[ThreadLocalRandom.current().nextInt(geneCnt)]);
+                    }
+                    for (int i = 0; i < geneCnt / 4; i++) {
+                        genes[i + (geneCnt / 2)] = new Genome(best2);
+                    }
+                    for (int i = 0; i < geneCnt / 4; i++) {
+                        genes[i + (geneCnt * 3 / 4)] = new Genome(best1);
                     }
                     break;
-                case 2:
+                case 2: //DEPRECATED Todo: reimplement
                     // rank based
                     Genome[] newGeneration = new Genome[geneCnt];
                     int chosenOne;
@@ -396,19 +422,20 @@ public class TravellingSalesman {
                             chosenOne = -chosenOne - 1;
                         }
                         if (chosen.contains(chosenOne)) {
-                            newGeneration[i] = new Genome(gene[chosenOne]);
+                            newGeneration[i] = new Genome(genes[chosenOne]);
                         } else {
-                            newGeneration[i] = gene[chosenOne];
+                            newGeneration[i] = genes[chosenOne];
                             chosen.add(chosenOne);
                         }
                     }
-                    gene = newGeneration;
+                    genes = newGeneration;
                     break;
                 default:
                     throw new IllegalArgumentException("no valid replicationScheme: " + replicationScheme);
             }
         }
 
+        @Deprecated
         private double[] generatePsKum() {
             double[] psKum = new double[geneCnt];
             psKum[0] = 0;
@@ -418,6 +445,7 @@ public class TravellingSalesman {
             return psKum;
         }
 
+        @Deprecated
         private double getPs(int i) {
             int n = geneCnt;
             double res1 = ((2 - (double) s) / (double) n);
@@ -429,8 +457,8 @@ public class TravellingSalesman {
         }
 
         private void updateOverallMaxFitness() {
-            if (maxFitness < gene[geneCnt - 1].getFitness()) {
-                maxFitness = gene[geneCnt - 1].getFitness();
+            if (maxFitness < 0 || genes[geneCnt - 1].getFitness() < maxFitness) {
+                maxFitness = genes[geneCnt - 1].getFitness();
             }
         }
 
@@ -438,7 +466,7 @@ public class TravellingSalesman {
             return overallNeededGenerations;
         }
 
-        public int getMaxFitness() {
+        public double getMaxFitness() {
             return maxFitness;
         }
 
@@ -461,19 +489,21 @@ public class TravellingSalesman {
         private synchronized void checkFinished() {
             readyThreads++;
 
-            System.out.print("\r" + readyThreads);
+            System.out.print("\r" + readyThreads + "/" + threads.size());
             assert threads != null;
             progressBar.setProgress(progress += (1 / (double) threads.size()));
 
             if (readyThreads == threads.size()) {
                 TravellingSalesmanTask bestTask = threads.get(0);
                 for (TravellingSalesmanTask thread : threads) {
-                    if (thread.getGener() < bestTask.getGener()) {
+                    if (thread.genes[geneCnt - 1].getFitness() <= bestTask.genes[geneCnt - 1].getFitness()) {
                         bestTask = thread;
                     }
                 }
 
                 printResults(bestTask);
+
+                Print.printAllResults(bestTask.overallNeededGenerations, numberOfRunsToAverage, bestTask.pm, bestTask.pc, geneLen, geneCnt, recombinationMethod, replicationScheme, bestTask.maxFitness, bestTask.genes[geneCnt - 1].getRoute());
 
                 //Controller.setRunning(false);
 

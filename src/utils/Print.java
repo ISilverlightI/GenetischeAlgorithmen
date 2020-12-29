@@ -3,6 +3,8 @@ package utils;
 import exerciseOne.AllOneIsFittest;
 import exerciseTwo.TravellingSalesman;
 
+import java.util.Arrays;
+
 public class Print {
 
     public static void printRunsStartFitness(int runNumber, exerciseOne.Genome[] gene) {
@@ -16,7 +18,6 @@ public class Print {
     }
 
     public static void printRunsStartFitness(int runNumber, exerciseTwo.Genome[] gene) {
-        //updateFitness(); //Todo: check if this makes a difference and fix it if needed
         int overallFitness = 0;
         for (exerciseTwo.Genome gen : gene) {
             overallFitness += gen.getFitness();
@@ -48,18 +49,21 @@ public class Print {
         System.out.println();
     }
 
-    public static void printAllResults(int overallNeededGenerations, int numberOfRunsToAverage, double pm, double pc, int geneLen, int geneCnt, double initRate, int recombinationMethod, int replicationScheme, double acceptRate, int maxFitness) {
+    public static void printAllResults(int overallNeededGenerations, int numberOfRunsToAverage, double pm, double pc, int geneLen, int geneCnt, int recombinationMethod, int replicationScheme, double maxFitness, int[] results) {
+        System.out.println("\n");
         System.out.println("average needed generations: " + (overallNeededGenerations / numberOfRunsToAverage));
         System.out.println("pm: " + pm);
         System.out.println("pc: " + pc);
         System.out.println("geneCnt: " + geneLen);
         System.out.println("geneLen: " + geneCnt);
-        System.out.println("initRate: " + initRate);
         System.out.println("crossover-method: " + recombinationMethod);
         System.out.println("replication-scheme: " + replicationScheme);
         System.out.println("number of runs: " + numberOfRunsToAverage);
-        System.out.println("accept rate: " + acceptRate);
-        System.out.println("max gene fitness: " + maxFitness + "\n");
+        System.out.println("best gene fitness: " + maxFitness + "\n");
+        for (int result : results) {
+            System.out.print(result+1 + " ");
+        }
+        System.out.println();
     }
 
 }

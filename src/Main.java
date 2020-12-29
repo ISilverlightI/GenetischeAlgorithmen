@@ -1,7 +1,10 @@
+import exerciseTwo.TravellingSalesman;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -14,7 +17,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        startExerciseOne(primaryStage);
+        // startExerciseOne(primaryStage);
         startExerciseTwo();
     }
 
@@ -25,8 +28,9 @@ public class Main extends Application {
         primaryStage.show();
     }
 
-    private void startExerciseTwo() {
-
+    private void startExerciseTwo() throws Exception {
+        new TravellingSalesman("05-map-10x10-36-dist42.64.txt", 100, 1000, 0, 0.9, 0.05, 0, 0.2, 0.005, 1, 1, 50, true, 5, 0, new ProgressBar(), new Label());
+        //new TravellingSalesman("05-map-10x10-36-dist42.64.txt", 100, 1000, 0.9, 0.05, 1, 1, 50, true, 0, new ProgressBar(), new Label());
     }
 
 }

@@ -1,80 +1,86 @@
 package exerciseTwo;
 
+import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Genome implements Comparable<Genome> {
 
+    private int[] route;
+
+    private final double[][] distanceArray;
     private final int geneLen;
-    private final double initRate;
-
-    private final int[] values;
-    private int fitness;
-
+    private double fitness;
     private boolean changed;
 
-    public Genome(int geneLen) {
-        this.geneLen = geneLen;
-        this.initRate = 0;
+    public Genome(double[][] distanceArray) {
+        this.distanceArray = distanceArray;
+        this.geneLen = distanceArray.length;
         this.fitness = 0;
-        this.changed = false;
+        this.changed = true;
 
-        values = new int[this.geneLen];
-
-        initializeZero();
-    }
-
-    public Genome(int geneLen, double initRate) {
-        this.geneLen = geneLen;
-        this.initRate = initRate;
-        this.fitness = 0;
-        this.changed = false;
-
-        values = new int[this.geneLen];
+        this.route = new int[this.geneLen];
 
         initializeRandom();
     }
 
     public Genome(Genome gen) {
+        this.distanceArray = gen.getDistanceArray();
         this.geneLen = gen.getGeneLen();
-        this.initRate = gen.getInitRate();
         this.fitness = gen.getFitness();
-        this.changed = false;
+        this.changed = gen.isChanged();
 
-        values = new int[this.geneLen];
+        this.route = new int[this.geneLen];
 
         initializeLikeOld(gen);
     }
 
-    private void initializeZero() {
-        for (int i = 0; i < geneLen; i++) {
-            values[i] = 0;
-        }
+    public Genome(int[] route, double[][] distanceArray) {
+        this.distanceArray = distanceArray;
+        this.geneLen = route.length;
+        this.fitness = 0;
+        this.changed = true;
+
+        this.route = route;
+
+        updateFitness();
     }
 
     private void initializeRandom() {
+        ArrayList<Integer> checked = new ArrayList<>();
+        int index = ThreadLocalRandom.current().nextInt(geneLen);
         for (int i = 0; i < geneLen; i++) {
-            if (ThreadLocalRandom.current().nextFloat() <= initRate) {
-                values[i] = 1;
-                this.setChanged(true);
+            while (checked.contains(index)) {
+                index = ThreadLocalRandom.current().nextInt(geneLen);
             }
+            checked.add(index);
+            route[i] = index;
         }
+        updateFitness();
     }
 
     private void initializeLikeOld(Genome gen) {
-        System.arraycopy(gen.getValues(), 0, values, 0, values.length);
+        System.arraycopy(gen.getRoute(), 0, route, 0, route.length);
     }
 
     public void updateFitness() {
         if (isChanged()) {
             fitness = 0;
 
-            for (int value : getValues()) {
-                fitness +=value;
+            int previouseCity = -1;
+
+            for (int city : getRoute()) {
+                if (previouseCity != -1) {
+                    fitness += distanceArray[previouseCity][city];
+                }
+                previouseCity = city;
             }
+            fitness+=distanceArray[route[route.length-1]][route[0]];
+
+            setChanged(false);
         }
     }
 
-    public int getFitness() {
+    public double getFitness() {
         return fitness;
     }
 
@@ -82,28 +88,29 @@ public class Genome implements Comparable<Genome> {
         return geneLen;
     }
 
-    public double getInitRate() {
-        return initRate;
+    public int[] getRoute() {
+        return route;
     }
 
-    public int[] getValues() {
-        return values;
+    private double[][] getDistanceArray() {
+        return this.distanceArray;
     }
 
     public boolean isChanged() {
         return changed;
     }
 
-    public void changeFitness(int fitnessToAdd){
-        fitness += fitnessToAdd;
+    public void setRoute(int[] route) {
+        this.route = route;
     }
 
     public void setChanged(boolean changed) {
         this.changed = changed;
     }
 
+
     @Override
     public int compareTo(Genome gen) {
-        return Integer.compare(this.fitness, gen.getFitness());
+        return Double.compare(this.fitness, gen.getFitness());
     }
 }
