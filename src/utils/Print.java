@@ -8,7 +8,7 @@ import java.util.Arrays;
 public class Print {
 
     public static void printRunsStartFitness(int runNumber, exerciseOne.Genome[] gene) {
-        //updateFitness(); //Todo: check if this makes a difference and fix it if needed
+        //updateFitness(); //Todo: check if this makes a difference and fix it if needed SHOULDN'T MAKE A DIFFERENCE!
         int overallFitness = 0;
         for (exerciseOne.Genome gen : gene) {
             overallFitness += gen.getFitness();

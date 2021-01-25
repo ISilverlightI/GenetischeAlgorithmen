@@ -16,6 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class TravellingSalesman {
 
     public final double[][] distanceArray;
+    public final double[][] sortedDistanceArray;
     private final int geneCnt;                                      // Anzahl der Gene
     private final int geneLen;                                      // Länge der Gene
     private final int maxGenerations;                               // Maximalzahl der Generationen, danach Abbruch
@@ -47,6 +48,7 @@ public class TravellingSalesman {
 
     public TravellingSalesman(String inputMap, int geneCnt, int maxGenerations, double pc, double pm, int replicationScheme, int recombinationMethod, int numberOfRunsToAverage, boolean protectBest, int s, ProgressBar progressBar, Label resultLabel) throws Exception {
         distanceArray = ReadFile.getDistanceArray(inputMap);
+        sortedDistanceArray = getSortedDistanceArray(distanceArray);
 
         this.geneCnt = geneCnt;
         this.geneLen = distanceArray.length;
@@ -87,6 +89,7 @@ public class TravellingSalesman {
 
     public TravellingSalesman(String inputMap, int geneCnt, int maxGenerations, double startPc, double endPc, double stepPc, double startPm, double endPm, double stepPm, int replicationScheme, int recombinationMethod, int numberOfRunsToAverage, boolean protectBest, int numberOfThreads, int s, ProgressBar progressBar, Label resultLabel) throws Exception {
         distanceArray = ReadFile.getDistanceArray(inputMap);
+        sortedDistanceArray = getSortedDistanceArray(distanceArray);
 
         this.geneCnt = geneCnt;
         this.geneLen = distanceArray.length;
@@ -133,6 +136,7 @@ public class TravellingSalesman {
 
         TravellingSalesmanTask task = new TravellingSalesmanTask(0, this.pc, this.pm);
         task.task();
+        //task.test(); not good, was just to test a smart idea
         progressBar.setProgress(1);
         //Controller.setRunning(false);
 
@@ -157,6 +161,29 @@ public class TravellingSalesman {
                 counter++;
             }
         }
+    }
+
+    private double[][] getSortedDistanceArray(double[][] distanceArray) {
+
+        double[][] sortedDistanceArray = Arrays.stream(distanceArray)
+                .map(a -> Arrays.copyOf(a, a.length))
+                .toArray(double[][]::new);
+
+        for (int i = 0; i < sortedDistanceArray.length; i++) {
+            ArrayList<Integer> usedCities = new ArrayList<>();
+            Arrays.sort(sortedDistanceArray[i]);
+            for (int j = 0; j < sortedDistanceArray[i].length; j++) {
+                for (int k = 0; k < distanceArray[i].length; k++) {
+                    if (sortedDistanceArray[i][j] == distanceArray[i][k] && !usedCities.contains(k)) {
+                        sortedDistanceArray[i][j] = k;
+                        usedCities.add(k);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return sortedDistanceArray;
     }
 
     private void printResults(TravellingSalesmanTask bestTask) {
@@ -208,7 +235,7 @@ public class TravellingSalesman {
         private void task() {
             for (int i = 0; i < numberOfRunsToAverage; i++) {
 
-                //System.out.println("Run: " + (i+1) + " of " + numberOfRunsToAverage);
+                System.out.println("Run: " + (i + 1) + " of " + numberOfRunsToAverage);
 
                 initializeGenes();
 
@@ -223,7 +250,7 @@ public class TravellingSalesman {
 
                     // -> sort array with genes and check if fitness is minimal (fitness got automatically updated with it's mutation)
                     Arrays.sort(genes, Collections.reverseOrder());
-                    if ((genes[geneCnt - 1].getFitness() <= 41.66/*geneLen*/)) {
+                    if ((genes[geneCnt - 1].getFitness() <= /*41.66*//*geneLen*/604)) {
                         break;
                     }
 
@@ -232,7 +259,7 @@ public class TravellingSalesman {
 
                     // -> check if max fitness is reached after the changed genes fitness got updated
                     sortArrayByFitness();
-                    if ((genes[geneCnt - 1].getFitness() <= 41.66/*geneLen*/)) {
+                    if ((genes[geneCnt - 1].getFitness() <= /*41.66*//*geneLen*/604)) {
                         break;
                     }
 
@@ -249,7 +276,7 @@ public class TravellingSalesman {
                 overallNeededGenerations += generation;
                 updateOverallMaxFitness();
 
-                //System.out.println("actual best fitness: " + genes[geneCnt - 1].getFitness()+"\n");
+                System.out.println("actual best fitness: " + genes[geneCnt - 1].getFitness() + "\n");
             }
             gener = (overallNeededGenerations / numberOfRunsToAverage);
         }
@@ -332,8 +359,27 @@ public class TravellingSalesman {
             // go find next city of parent 1
             nextCity = findNextCity(route, city);
             //search until u got a city, that's not in the new routes
+
+            /* TODO: TEST THIS
+            if (ArrayUtils.contains(newRoute, nextCity, upperBound)) {
+                nextCity = findNextClosestCity(city, newRoute, upperBound);
+            }
+            */
             while (ArrayUtils.contains(newRoute, nextCity, upperBound)) {
                 nextCity = findNextCity(route, nextCity);
+            }
+
+            return nextCity;
+        }
+
+        //Todo: not implemented or tested yet
+        private int findNextClosestCity(int city, int[] newRoute, int upperBound) {
+            int i = 1;
+
+            int nextCity = (int) sortedDistanceArray[city][i];
+            while (ArrayUtils.contains(newRoute, nextCity, upperBound)) {
+                i++;
+                nextCity = (int) sortedDistanceArray[city][i];
             }
             return nextCity;
         }
@@ -489,15 +535,19 @@ public class TravellingSalesman {
         private synchronized void checkFinished() {
             readyThreads++;
 
-            System.out.print("\r" + readyThreads + "/" + threads.size());
+            System.out.print("\r" + readyThreads + "/" + threads.size() + " - estimated time: " + stopwatch.getEstimatedTime(readyThreads, threads.size()) + " - best fitness: " + genes[geneCnt - 1].getFitness());
             assert threads != null;
             progressBar.setProgress(progress += (1 / (double) threads.size()));
 
             if (readyThreads == threads.size()) {
                 TravellingSalesmanTask bestTask = threads.get(0);
                 for (TravellingSalesmanTask thread : threads) {
-                    if (thread.genes[geneCnt - 1].getFitness() <= bestTask.genes[geneCnt - 1].getFitness()) {
+                    if (thread.genes[geneCnt - 1].getFitness() < bestTask.genes[geneCnt - 1].getFitness()) {
                         bestTask = thread;
+                    } else if (thread.genes[geneCnt - 1].getFitness() == bestTask.genes[geneCnt - 1].getFitness()) {
+                        if (thread.getGener() < bestTask.getGener()) {
+                            bestTask = thread;
+                        }
                     }
                 }
 
@@ -518,6 +568,45 @@ public class TravellingSalesman {
                 assert pool != null;
                 pool.shutdown();
             }
+        }
+
+        public void test() {
+            for (int i = 0; i < numberOfRunsToAverage; i++) {
+
+                System.out.println("Run: " + (i + 1) + " of " + numberOfRunsToAverage);
+
+                initializeGenes();
+
+                for (Genome gene : genes) {
+                    gene.setRoute(smartCheck(gene));
+                }
+
+                // -> check if max fitness is reached after the changed genes fitness got updated
+                sortArrayByFitness();
+
+                overallNeededGenerations += generation;
+                updateOverallMaxFitness();
+
+                System.out.println("actual best fitness: " + genes[geneCnt - 1].getFitness() + "\n");
+            }
+            gener = (overallNeededGenerations / numberOfRunsToAverage);
+        }
+
+        private int[] smartCheck(Genome gen) {
+            int[] newRoute = new int[geneLen];
+
+            //start with first city of gen1
+            int startCity = gen.getRoute()[0];
+
+            //save first in new routes list
+            newRoute[0] = startCity;
+
+            for (int i = 1; i < newRoute.length; i++) {
+                newRoute[i] = findNextClosestCity(startCity, newRoute, i);
+                startCity = newRoute[i];
+            }
+
+            return newRoute;
         }
     }
 }

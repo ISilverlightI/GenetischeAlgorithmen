@@ -29,8 +29,8 @@ public class Main extends Application {
     }
 
     private void startExerciseTwo() throws Exception {
-        new TravellingSalesman("05-map-10x10-36-dist42.64.txt", 100, 1000, 0, 0.9, 0.05, 0, 0.2, 0.005, 1, 1, 50, true, 5, 0, new ProgressBar(), new Label());
-        //new TravellingSalesman("05-map-10x10-36-dist42.64.txt", 100, 1000, 0.9, 0.05, 1, 1, 50, true, 0, new ProgressBar(), new Label());
+        //new TravellingSalesman("06-map-100x100-50.txt", 100, 1000, 0, 0.9, 0.05, 0, 0.2, 0.005, 1, 1, 50, true, 5, 0, new ProgressBar(), new Label());
+        new TravellingSalesman("06-map-100x100-200.txt", 100, 2000, 0.8, 0.065, 1, 1, 50, true, 0, new ProgressBar(), new Label());
     }
 
 }
