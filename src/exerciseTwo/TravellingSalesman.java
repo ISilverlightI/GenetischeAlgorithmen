@@ -468,9 +468,9 @@ public class TravellingSalesman {
                             chosenOne = -chosenOne - 1;
                         }
                         if (chosen.contains(chosenOne)) {
-                            newGeneration[i] = new Genome(genes[chosenOne]);
+                            newGeneration[i] = new Genome(genes[chosenOne-1]);
                         } else {
-                            newGeneration[i] = genes[chosenOne];
+                            newGeneration[i] = genes[chosenOne-1];
                             chosen.add(chosenOne);
                         }
                     }
