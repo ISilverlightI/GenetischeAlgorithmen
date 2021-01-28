@@ -268,6 +268,10 @@ public class TravellingSalesman {
 
                     Arrays.sort(genes, Collections.reverseOrder());
 
+                    if (generation%500==0){
+                        System.out.println("\nGeneration: " + generation + "\nFitness: " + genes[geneCnt-1].getFitness());
+                    }
+
                     // loop until max fitness or max generations is reached
                 } while (generation < maxGenerations);
 

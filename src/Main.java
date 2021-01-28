@@ -28,8 +28,8 @@ public class Main extends Application {
     }
 
     private void startExerciseTwo() throws Exception {
-        new TravellingSalesman("06-map-100x100-50.txt", 100, 2000, 0, 0.9, 0.05, 0, 0.2, 0.005, 0, 1, 20, true, 14, 0, new ProgressBar(), new Label());
-        //new TravellingSalesman("06-map-100x100-200.txt", 100, 2000, 0.8, 0.065, 1, 1, 50, true, 0, new ProgressBar(), new Label());
+        //new TravellingSalesman("06-map-100x100-50.txt", 100, 2000, 0, 0.9, 0.05, 0, 0.2, 0.005, 0, 1, 20, true, 14, 0, new ProgressBar(), new Label());
+        new TravellingSalesman("06-map-100x100-200.txt", 100, 10000, 0.35, 0.01, 0, 1, 20, true, 0, new ProgressBar(), new Label());
     }
 
 }
