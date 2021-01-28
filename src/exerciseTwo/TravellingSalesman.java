@@ -442,6 +442,10 @@ public class TravellingSalesman {
         private void replicateGenes(int replicationScheme) {
             switch (replicationScheme) {
                 case 0:
+                    // 50x2
+                    for (int i = 0; i < geneCnt / 2; i++) {
+                        genes[i] = new Genome(genes[i + (geneCnt / 2)]);
+                    }
                     break;
                 case 1:
                     // 2x50
@@ -468,9 +472,9 @@ public class TravellingSalesman {
                             chosenOne = -chosenOne - 1;
                         }
                         if (chosen.contains(chosenOne)) {
-                            newGeneration[i] = new Genome(genes[chosenOne]);
+                            newGeneration[i] = new Genome(genes[chosenOne-1]);
                         } else {
-                            newGeneration[i] = genes[chosenOne];
+                            newGeneration[i] = genes[chosenOne-1];
                             chosen.add(chosenOne);
                         }
                     }
