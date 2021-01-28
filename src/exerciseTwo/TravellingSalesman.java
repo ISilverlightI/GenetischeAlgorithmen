@@ -442,6 +442,10 @@ public class TravellingSalesman {
         private void replicateGenes(int replicationScheme) {
             switch (replicationScheme) {
                 case 0:
+                    // 50x2
+                    for (int i = 0; i < geneCnt / 2; i++) {
+                        genes[i] = new Genome(genes[i + (geneCnt / 2)]);
+                    }
                     break;
                 case 1:
                     // 2x50
