@@ -1,6 +1,5 @@
 package utils;
 
-import exerciseOne.AllOneIsFittest;
 import exerciseOne.AllOneIsFittest.AllOneIsFittestTask;
 import exerciseTwo.TravellingSalesman.TravellingSalesmanTask;
 
@@ -18,9 +17,9 @@ public class FileWriter {
     private static final String TIME_FORMAT = "yyyy_MM_dd_HH_mm";
     private static final String REGEX = "0000000[0-9]*";
 
-    public static void write(String data) {
+    public static void write(String data, String name) {
         try {
-            Files.write(Paths.get(PATH + "AllOneIsFittest_" + getTimestamp() + ".txt"), data.getBytes(), StandardOpenOption.CREATE);
+            Files.write(Paths.get(PATH + name + "_" + getTimestamp() + ".txt"), data.getBytes(), StandardOpenOption.CREATE);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -46,11 +45,30 @@ public class FileWriter {
                     .append("\n");
         }
 
-        write(stringBuilder.toString());
+        write(stringBuilder.toString(), "allOneIsFittest");
     }
 
     public static void writeTravellingSalesman(ArrayList<TravellingSalesmanTask> list) {
-        //Todo: doSomeThings
+        StringBuilder stringBuilder = new StringBuilder(10000);
+
+        double lastPc = 0;
+
+        for (TravellingSalesmanTask travellingSalesmanTask : list) {
+            if(lastPc != travellingSalesmanTask.getPc()){
+                if (lastPc != 0){
+                    stringBuilder.append("\n");
+                }
+                lastPc = travellingSalesmanTask.getPc();
+            }
+            stringBuilder.append(cleanupString(travellingSalesmanTask.getPm()))
+                    .append(" ")
+                    .append(cleanupString(travellingSalesmanTask.getPc()))
+                    .append(" ")
+                    .append(cleanupString(travellingSalesmanTask.getGener()))
+                    .append("\n");
+        }
+
+        write(stringBuilder.toString(), "travelingSalesman");
     }
 
     public static String cleanupString(double value) {

@@ -151,9 +151,9 @@ public class TravellingSalesman {
 
         int counter = 0;
 
-        for (this.pc = this.startPc; this.pc <= (this.endPc); this.pc += this.stepPc) {
+        for (this.pc = this.endPc; this.pc >= (this.startPc); this.pc -= this.stepPc) {
             pm = 0;
-            for (this.pm = this.startPm; this.pm <= (this.endPm); this.pm += this.stepPm) {
+            for (this.pm = this.endPm; this.pm >= (this.startPm); this.pm -= this.stepPm) {
 
                 threads.add(new TravellingSalesmanTask(counter, pc, pm));
                 pool.execute(threads.get(counter));
@@ -235,7 +235,7 @@ public class TravellingSalesman {
         private void task() {
             for (int i = 0; i < numberOfRunsToAverage; i++) {
 
-                System.out.println("Run: " + (i + 1) + " of " + numberOfRunsToAverage);
+                // System.out.println("Run: " + (i + 1) + " of " + numberOfRunsToAverage);
 
                 initializeGenes();
 
@@ -250,7 +250,7 @@ public class TravellingSalesman {
 
                     // -> sort array with genes and check if fitness is minimal (fitness got automatically updated with it's mutation)
                     Arrays.sort(genes, Collections.reverseOrder());
-                    if ((genes[geneCnt - 1].getFitness() <= /*41.66*//*geneLen*/604)) {
+                    if ((genes[geneCnt - 1].getFitness() <= /*41.66*/geneLen/*604*/)) {
                         break;
                     }
 
@@ -259,7 +259,7 @@ public class TravellingSalesman {
 
                     // -> check if max fitness is reached after the changed genes fitness got updated
                     sortArrayByFitness();
-                    if ((genes[geneCnt - 1].getFitness() <= /*41.66*//*geneLen*/604)) {
+                    if ((genes[geneCnt - 1].getFitness() <= /*41.66*/geneLen/*604*/)) {
                         break;
                     }
 
@@ -276,7 +276,7 @@ public class TravellingSalesman {
                 overallNeededGenerations += generation;
                 updateOverallMaxFitness();
 
-                System.out.println("actual best fitness: " + genes[geneCnt - 1].getFitness() + "\n");
+//                System.out.println("actual best fitness: " + genes[geneCnt - 1].getFitness() + "\n");
             }
             gener = (overallNeededGenerations / numberOfRunsToAverage);
         }
