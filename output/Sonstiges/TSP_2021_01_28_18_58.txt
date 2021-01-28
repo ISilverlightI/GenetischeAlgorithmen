@@ -1,0 +1,20 @@
+map: 100x100 - 50
+replication: 0
+protectBest: true
+
+
+average needed generations: 2000
+pm: 0.009999999999999901
+pc: 0.29999999999999977
+geneCnt: 50
+geneLen: 100
+crossover-method: 1
+replication-scheme: 0
+number of runs: 20
+best gene fitness: 611.3416502445342
+
+37 49 16 42 31 24 5 40 4 14 9 32 38 3 36 48 30 44 29 28 20 2 27 41 47 23 25 26 19 6 22 7 21 39 10 43 34 45 46 33 1 12 15 18 50 8 17 13 35 11
+
+Before writing:	01:00:02
+
+After writing:	01:00:02
