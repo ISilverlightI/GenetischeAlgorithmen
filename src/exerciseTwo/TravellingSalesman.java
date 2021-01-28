@@ -250,7 +250,7 @@ public class TravellingSalesman {
 
                     // -> sort array with genes and check if fitness is minimal (fitness got automatically updated with it's mutation)
                     Arrays.sort(genes, Collections.reverseOrder());
-                    if ((genes[geneCnt - 1].getFitness() <= /*41.66*/geneLen/*604*/)) {
+                    if ((genes[geneCnt - 1].getFitness() <= 41.66/*geneLen*//*604*/)) {
                         break;
                     }
 
@@ -259,7 +259,7 @@ public class TravellingSalesman {
 
                     // -> check if max fitness is reached after the changed genes fitness got updated
                     sortArrayByFitness();
-                    if ((genes[geneCnt - 1].getFitness() <= /*41.66*/geneLen/*604*/)) {
+                    if ((genes[geneCnt - 1].getFitness() <= 41.66/*geneLen*//*604*/)) {
                         break;
                     }
 
