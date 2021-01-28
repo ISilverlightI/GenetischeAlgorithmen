@@ -1,0 +1,20 @@
+protect best: false
+maxGenerations: 2000
+replication_scheme: 1
+
+
+average needed generations: 18
+pm: 0.054999999999999896
+pc: 0.9
+geneCnt: 36
+geneLen: 100
+crossover-method: 1
+replication-scheme: 1
+number of runs: 20
+best gene fitness: 36.0
+
+25 26 27 28 29 30 31 32 33 34 35 36 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
+
+Before writing:	00:13:19
+
+After writing:	00:13:19
