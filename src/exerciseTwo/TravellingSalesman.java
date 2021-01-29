@@ -1,6 +1,5 @@
 package exerciseTwo;
 
-import exerciseOne.Controller;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -38,13 +37,15 @@ public class TravellingSalesman {
     private double progress;
     private final Label resultLabel;
 
+    private final int breakCondition;
+
     private final ExecutorService pool;
     private final ArrayList<TravellingSalesmanTask> threads;        // besitzt alle threads beim Multithreading
     private volatile int readyThreads;                              // threads that finished
 
     private final Stopwatch stopwatch;
 
-    public TravellingSalesman(String inputMap, int geneCnt, int maxGenerations, double pc, double pm, int replicationScheme, int recombinationMethod, int numberOfRunsToAverage, boolean protectBest, int s, ProgressBar progressBar, Label resultLabel) throws Exception {
+    public TravellingSalesman(String inputMap, int geneCnt, int maxGenerations, double pc, double pm, int replicationScheme, int recombinationMethod, int numberOfRunsToAverage, boolean protectBest, int s, ProgressBar progressBar, Label resultLabel, int breakCondition) throws Exception {
         distanceArray = ReadFile.getDistanceArray(inputMap);
         sortedDistanceArray = getSortedDistanceArray(distanceArray);
 
@@ -69,6 +70,8 @@ public class TravellingSalesman {
             this.protectedGenesCount = geneCnt;
         }
 
+        this.breakCondition = breakCondition;
+
         this.s = s;
         this.progressBar = progressBar;
         this.progress = 0;
@@ -82,7 +85,7 @@ public class TravellingSalesman {
         start();
     }
 
-    public TravellingSalesman(String inputMap, int geneCnt, int maxGenerations, double startPc, double endPc, double stepPc, double startPm, double endPm, double stepPm, int replicationScheme, int recombinationMethod, int numberOfRunsToAverage, boolean protectBest, int numberOfThreads, int s, ProgressBar progressBar, Label resultLabel) throws Exception {
+    public TravellingSalesman(String inputMap, int geneCnt, int maxGenerations, double startPc, double endPc, double stepPc, double startPm, double endPm, double stepPm, int replicationScheme, int recombinationMethod, int numberOfRunsToAverage, boolean protectBest, int numberOfThreads, int s, ProgressBar progressBar, Label resultLabel, int breakCondition) throws Exception {
         distanceArray = ReadFile.getDistanceArray(inputMap);
         sortedDistanceArray = getSortedDistanceArray(distanceArray);
 
@@ -106,6 +109,8 @@ public class TravellingSalesman {
         } else {
             this.protectedGenesCount = geneCnt;
         }
+
+        this.breakCondition = breakCondition;
 
         this.s = s;
         this.progressBar = progressBar;
@@ -179,7 +184,7 @@ public class TravellingSalesman {
     }
 
     private void printResults(TravellingSalesmanTask bestTask) {
-        Platform.runLater(() -> resultLabel.setText("\t\tBeste Ergebnisse bei:\t\npc: " + FileWriter.cleanupString(bestTask.getPc()) + "     pm: " + FileWriter.cleanupString(bestTask.getPm()) + "     Generationen: " + bestTask.getGener()));
+        Platform.runLater(() -> resultLabel.setText("\t\tBeste Ergebnisse bei:\t\npc: " + FileWriter.cleanupString(bestTask.getPc()) + "     pm: " + FileWriter.cleanupString(bestTask.getPm()) + "     Generationen: " + bestTask.getGener() + "\n\t\t\tFitness: " + bestTask.getMaxFitness()));
     }
 
     public class TravellingSalesmanTask implements Runnable {
@@ -245,7 +250,7 @@ public class TravellingSalesman {
                     // -> sort array with genes and check if fitness is minimal (fitness got automatically updated with it's mutation)
                     sortArrayByFitness();
 
-                    if ((genes[geneCnt - 1].getFitness() <= 547/*41.66*//*geneLen*//*604*/)) {
+                    if ((genes[geneCnt - 1].getFitness() <= breakCondition)) {
                         break;
                     }
 
@@ -255,7 +260,7 @@ public class TravellingSalesman {
                     // -> check if max fitness is reached after the changed genes fitness got updated
                     sortArrayByFitness();
 
-                    if ((genes[geneCnt - 1].getFitness() <= 547/*41.66*//*geneLen*//*604*/)) {
+                    if ((genes[geneCnt - 1].getFitness() <= breakCondition)) {
                         break;
                     }
 

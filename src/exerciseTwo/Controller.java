@@ -62,10 +62,10 @@ public class Controller {
                 case "06-map-100x100-50.txt":
                     map = "06-map-100x100-50.txt";
                     break;
-            case "06-map-100x100-200.txt":
+                case "06-map-100x100-200.txt":
                     map = "06-map-100x100-200.txt";
                     break;
-            case "07-map-500.txt":
+                case "07-map-500.txt":
                     map = "07-map-500.txt";
                     break;
             }
@@ -102,11 +102,10 @@ public class Controller {
         int numberOfRunsToAverage = Integer.parseInt(this.numberOfRunsToAverage.getCharacters().toString());
         boolean protectBest = this.protectBest.isSelected();
 
-        System.out.println("\nStarting: " + map + " -Map");
-
         if (!running) {
             setRunning(true);
-            new TravellingSalesman(map, geneCnt, maxGenerations, pc, pm, replicationScheme, recombinationMethod, numberOfRunsToAverage, protectBest, 0, progressBar, resultLabel);
+            System.out.println("\nStarting: " + map + " -Map");
+            new TravellingSalesman(map, geneCnt, maxGenerations, pc, pm, replicationScheme, recombinationMethod, numberOfRunsToAverage, protectBest, 0, progressBar, resultLabel, getBreakCondition(map));
         }
     }
 
@@ -174,7 +173,8 @@ public class Controller {
 
         if (!running) {
             setRunning(true);
-            new TravellingSalesman(map, geneCnt, maxGenerations, startPc, endPc, stepPc, startPm, endPm, stepPm, replicationScheme, recombinationMethod, numberOfRunsToAverage, protectBest, numberOfThreads, 0, progressBar, resultLabel);
+            System.out.println("\nStarting: " + map + " -Map");
+            new TravellingSalesman(map, geneCnt, maxGenerations, startPc, endPc, stepPc, startPm, endPm, stepPm, replicationScheme, recombinationMethod, numberOfRunsToAverage, protectBest, numberOfThreads, 0, progressBar, resultLabel, getBreakCondition(map));
         }
     }
 
@@ -186,6 +186,23 @@ public class Controller {
         } else {
             sLabel.setVisible(false);
             sValue.setVisible(false);
+        }
+    }
+
+    private int getBreakCondition(String map){
+        switch (map){
+        case "05-map-10x10-36border.txt":
+            return 36;
+        case "05-map-10x10-36-dist42.64.txt":
+            return 42;
+        case "06-map-100x100-50.txt":
+            return (int) (1+(0.765*Math.sqrt(51*100*100)));
+        case "06-map-100x100-200.txt":
+            return (int) (1+(0.765*Math.sqrt(201*100*100)));
+        case "07-map-500.txt":
+            return (int) (1+(0.765*Math.sqrt(501*200*200)));
+            default:
+                return 0;
         }
     }
 
