@@ -29,7 +29,7 @@ public class Main extends Application {
 
     private void startExerciseTwo() throws Exception {
         //new TravellingSalesman("06-map-100x100-200.txt", 100, 100000, 0.35, 0.4, 0.5, 0.01, 0.03, 0.5, 0, 1, 20, false, 1, 0, new ProgressBar(), new Label());
-        new TravellingSalesman("06-map-100x100-50.txt", 100, 10000, 0.35, 0.02, 0, 1, 5, true, 0, new ProgressBar(), new Label());
+        new TravellingSalesman("06-map-100x100-200.txt", 100, 10000, 0.35, 0.02, 0, 1, 3, true, 0, new ProgressBar(), new Label());
     }
 
 }
