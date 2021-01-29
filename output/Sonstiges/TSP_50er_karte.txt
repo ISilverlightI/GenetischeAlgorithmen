@@ -1,0 +1,11 @@
+average needed generations: 10000
+pm: 0.02
+pc: 0.35
+geneCnt: 50
+geneLen: 100
+crossover-method: 1
+replication-scheme: 0
+number of runs: 5
+best gene fitness: 611.2749717656294
+
+43 34 45 46 33 1 12 15 18 50 8 17 13 35 11 37 49 16 42 31 24 5 40 4 14 9 32 38 3 36 29 48 30 44 28 20 2 27 41 47 23 21 25 26 19 6 22 7 39 10

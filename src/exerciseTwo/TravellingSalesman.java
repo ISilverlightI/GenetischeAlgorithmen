@@ -245,12 +245,15 @@ public class TravellingSalesman {
                     // set generation
                     generation += 1;
 
+                    sortArrayByFitness();
+
                     // 1. Mutate
                     mutateGene();
 
                     // -> sort array with genes and check if fitness is minimal (fitness got automatically updated with it's mutation)
-                    Arrays.sort(genes, Collections.reverseOrder());
-                    if ((genes[geneCnt - 1].getFitness() <= 612/*41.66*//*geneLen*//*604*/)) {
+                    sortArrayByFitness();
+
+                    if ((genes[geneCnt - 1].getFitness() <= 547/*41.66*//*geneLen*//*604*/)) {
                         break;
                     }
 
@@ -259,17 +262,18 @@ public class TravellingSalesman {
 
                     // -> check if max fitness is reached after the changed genes fitness got updated
                     sortArrayByFitness();
-                    if ((genes[geneCnt - 1].getFitness() <= 612/*41.66*//*geneLen*//*604*/)) {
+
+                    if ((genes[geneCnt - 1].getFitness() <= 547/*41.66*//*geneLen*//*604*/)) {
                         break;
                     }
 
                     // 3. Replicate
                     replicateGenes(replicationScheme);
 
-                    Arrays.sort(genes, Collections.reverseOrder());
+                    sortArrayByFitness();
 
                     if (generation%500==0){
-                        System.out.println("\nGeneration: " + generation + "\nFitness: " + genes[geneCnt-1].getFitness());
+                        System.out.println("\nGeneration: " + generation + "\nafter replication:" + "\nFitness: " + genes[geneCnt-1].getFitness());
                     }
 
                     // loop until max fitness or max generations is reached
@@ -313,7 +317,7 @@ public class TravellingSalesman {
                         if (i < (protectedGenesCount * pc)) {
                             newGenes[i] = new Genome(crossTwoGenes(genes[ThreadLocalRandom.current().nextInt(protectedGenesCount)], genes[ThreadLocalRandom.current().nextInt(protectedGenesCount)]), distanceArray);
                         } else {
-                            newGenes[i] = genes[ThreadLocalRandom.current().nextInt(geneCnt)];
+                            newGenes[i] = new Genome(genes[ThreadLocalRandom.current().nextInt(geneCnt)]);
                         }
                     }
 
