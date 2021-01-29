@@ -51,7 +51,7 @@ public class Controller {
     @FXML
     public void normalStart() throws Exception {
         String map = "05-map-10x10-36border.txt";
-        if (this.map != null) {
+        if (this.map.getValue() != null) {
             switch (this.map.getValue().toString()) {
                 case "05-map-10x10-36border.txt":
                     map = "05-map-10x10-36border.txt";
@@ -102,6 +102,8 @@ public class Controller {
         int numberOfRunsToAverage = Integer.parseInt(this.numberOfRunsToAverage.getCharacters().toString());
         boolean protectBest = this.protectBest.isSelected();
 
+        System.out.println("\nStarting: " + map + " -Map");
+
         if (!running) {
             setRunning(true);
             new TravellingSalesman(map, geneCnt, maxGenerations, pc, pm, replicationScheme, recombinationMethod, numberOfRunsToAverage, protectBest, 0, progressBar, resultLabel);
@@ -111,7 +113,7 @@ public class Controller {
     @FXML
     public void optimizationStart() throws Exception {
         String map = "05-map-10x10-36border.txt";
-        if (this.map != null) {
+        if (this.map.getValue() != null) {
             switch (this.map.getValue().toString()) {
                 case "05-map-10x10-36border.txt":
                     map = "05-map-10x10-36border.txt";

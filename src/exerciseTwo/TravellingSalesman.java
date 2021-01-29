@@ -1,5 +1,6 @@
 package exerciseTwo;
 
+import exerciseOne.Controller;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -41,9 +42,6 @@ public class TravellingSalesman {
     private final ArrayList<TravellingSalesmanTask> threads;        // besitzt alle threads beim Multithreading
     private volatile int readyThreads;                              // threads that finished
 
-    private int overallNeededGenerations;                           // alle Generationen zusammen
-    private double maxFitness;                                      // maximal erreichte Fitness
-
     private final Stopwatch stopwatch;
 
     public TravellingSalesman(String inputMap, int geneCnt, int maxGenerations, double pc, double pm, int replicationScheme, int recombinationMethod, int numberOfRunsToAverage, boolean protectBest, int s, ProgressBar progressBar, Label resultLabel) throws Exception {
@@ -78,9 +76,6 @@ public class TravellingSalesman {
 
         this.pool = null;
         this.threads = null;
-
-        this.overallNeededGenerations = 0;
-        this.maxFitness = 0;
 
         this.stopwatch = new Stopwatch();
 
@@ -124,9 +119,6 @@ public class TravellingSalesman {
             this.pool = Executors.newFixedThreadPool(numberOfThreads);
         }
 
-        this.overallNeededGenerations = 0;
-        this.maxFitness = 0;
-
         this.stopwatch = new Stopwatch();
 
         startOptimization();
@@ -138,12 +130,12 @@ public class TravellingSalesman {
         task.task();
         //task.test(); not good, was just to test a smart idea
         progressBar.setProgress(1);
-        //Controller.setRunning(false);
+        Controller.setRunning(false);
 
         Arrays.sort(task.genes, Collections.reverseOrder());
 
         // print results
-        // printResults(task);
+        printResults(task);
         Print.printAllResults(task.getOverallNeededGenerations(), numberOfRunsToAverage, task.pm, task.pc, geneLen, geneCnt, recombinationMethod, replicationScheme, task.genes[geneCnt - 1].getFitness(), task.genes[geneCnt - 1].getRoute());
     }
 
@@ -564,6 +556,8 @@ public class TravellingSalesman {
                 }
 
                 printResults(bestTask);
+
+                Controller.setRunning(false);
 
                 Print.printAllResults(bestTask.overallNeededGenerations, numberOfRunsToAverage, bestTask.pm, bestTask.pc, geneLen, geneCnt, recombinationMethod, replicationScheme, bestTask.maxFitness, bestTask.genes[geneCnt - 1].getRoute());
 
