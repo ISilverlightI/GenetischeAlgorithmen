@@ -3,8 +3,6 @@ package utils;
 import exerciseOne.AllOneIsFittest;
 import exerciseTwo.TravellingSalesman;
 
-import java.util.Arrays;
-
 public class Print {
 
     public static void printRunsStartFitness(int runNumber, exerciseOne.Genome[] gene) {

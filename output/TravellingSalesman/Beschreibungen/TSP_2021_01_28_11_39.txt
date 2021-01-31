@@ -1,3 +1,5 @@
+plot 3: NOT TAKEN
+
 protect best: false
 maxGenerations: 2000
 replication_scheme: 1
