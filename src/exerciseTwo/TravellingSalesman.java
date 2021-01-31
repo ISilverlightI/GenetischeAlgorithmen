@@ -130,25 +130,27 @@ public class TravellingSalesman {
     }
 
     public void start() {
-        ArrayList<TravellingSalesmanTask> allTasks = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            TravellingSalesmanTask task = new TravellingSalesmanTask(0, this.pc, this.pm);
-            task.task();
-            //task.test(); not good, was just to test a smart idea
-            progressBar.setProgress(1);
-            Controller.setRunning(false);
 
-            Arrays.sort(task.genes, Collections.reverseOrder());
+        // ArrayList<TravellingSalesmanTask> allTasks = new ArrayList<>();
+        // for (int i = 0; i < 100; i++) {
 
-            // print results
-            printResults(task);
-            Print.printAllResults(task.getOverallNeededGenerations(), numberOfRunsToAverage, task.pm, task.pc, geneLen, geneCnt, recombinationMethod, replicationScheme, task.genes[geneCnt - 1].getFitness(), task.genes[geneCnt - 1].getRoute());
+        TravellingSalesmanTask task = new TravellingSalesmanTask(0, this.pc, this.pm);
+        task.task();
+        //task.test(); not good, was just to test a smart idea
+        progressBar.setProgress(1);
+        Controller.setRunning(false);
 
-            // only for exercise 1
-            allTasks.add(task);
-        }
-        Collections.sort(allTasks);
-        FileWriter.writeBestList(allTasks);
+        Arrays.sort(task.genes, Collections.reverseOrder());
+
+        // print results
+        printResults(task);
+        Print.printAllResults(task.getOverallNeededGenerations(), numberOfRunsToAverage, task.pm, task.pc, geneLen, geneCnt, recombinationMethod, replicationScheme, task.genes[geneCnt - 1].getFitness(), task.genes[geneCnt - 1].getRoute());
+
+        // only for exercise 2
+        //     allTasks.add(task);
+        // }
+        // Collections.sort(allTasks);
+        // FileWriter.writeBestList(allTasks);
     }
 
     public void startOptimization() {
@@ -194,7 +196,7 @@ public class TravellingSalesman {
         Platform.runLater(() -> resultLabel.setText("\t\tBeste Ergebnisse bei:\t\npc: " + FileWriter.cleanupString(bestTask.getPc()) + "     pm: " + FileWriter.cleanupString(bestTask.getPm()) + "     Generationen: " + bestTask.getGener() + "\n\t\t\tFitness: " + bestTask.getMaxFitness() + "\n\t\t\tTime: " + stopwatch.getTime()));
     }
 
-    public class TravellingSalesmanTask implements Runnable, Comparable<TravellingSalesmanTask>{
+    public class TravellingSalesmanTask implements Runnable, Comparable<TravellingSalesmanTask> {
 
         private final int id;
 
