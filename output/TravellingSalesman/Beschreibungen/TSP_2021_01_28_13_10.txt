@@ -1,3 +1,5 @@
+PLOT 1:
+
 protect best: false
 maxGenerations: 2000
 replication_scheme: 0
