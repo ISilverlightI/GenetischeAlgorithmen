@@ -72,6 +72,20 @@ public class FileWriter {
         write(stringBuilder.toString(), "travelingSalesman");
     }
 
+    public static void writeBestList(ArrayList<TravellingSalesmanTask> list) {
+        StringBuilder stringBuilder = new StringBuilder(10000);
+        int rank = 1;
+
+        for (TravellingSalesmanTask travellingSalesmanTask : list) {
+            stringBuilder.append(rank++)
+                    .append(" ")
+                    .append(cleanupString(travellingSalesmanTask.getMaxFitness()))
+                    .append("\n");
+        }
+
+        write(stringBuilder.toString(), "RankList");
+    }
+
     public static String cleanupString(double value) {
         return String.valueOf(value).replaceAll(REGEX0, "").replaceAll(REGEX9, "");
     }
