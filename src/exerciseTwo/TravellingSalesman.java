@@ -184,7 +184,7 @@ public class TravellingSalesman {
     }
 
     private void printResults(TravellingSalesmanTask bestTask) {
-        Platform.runLater(() -> resultLabel.setText("\t\tBeste Ergebnisse bei:\t\npc: " + FileWriter.cleanupString(bestTask.getPc()) + "     pm: " + FileWriter.cleanupString(bestTask.getPm()) + "     Generationen: " + bestTask.getGener() + "\n\t\t\tFitness: " + bestTask.getMaxFitness()));
+        Platform.runLater(() -> resultLabel.setText("\t\tBeste Ergebnisse bei:\t\npc: " + FileWriter.cleanupString(bestTask.getPc()) + "     pm: " + FileWriter.cleanupString(bestTask.getPm()) + "     Generationen: " + bestTask.getGener() + "\n\t\t\tFitness: " + bestTask.getMaxFitness() + "\n\t\t\tTime: " + stopwatch.getTime()));
     }
 
     public class TravellingSalesmanTask implements Runnable {
@@ -270,7 +270,11 @@ public class TravellingSalesman {
                     sortArrayByFitness();
 
                     if (generation%500==0){
-                        System.out.println("\nGeneration: " + generation + "\nafter replication:" + "\nFitness: " + genes[geneCnt-1].getFitness());
+                        System.out.println("\n\nGeneration: " + generation + "\nFitness: " + genes[geneCnt-1].getFitness() + "\n");
+                    }
+
+                    if(generation%10==0){
+                        System.out.print("\restimated normal time: " + stopwatch.getEstimatedTime(generation+i*maxGenerations, maxGenerations*numberOfRunsToAverage));
                     }
 
                     // loop until max fitness or max generations is reached

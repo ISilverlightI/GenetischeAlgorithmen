@@ -15,7 +15,8 @@ public class FileWriter {
 
     private static final String PATH = "C:\\Users\\janro\\IdeaProjects\\GenetischeAlgorithmen\\output\\";
     private static final String TIME_FORMAT = "yyyy_MM_dd_HH_mm";
-    private static final String REGEX = "0000000[0-9]*";
+    private static final String REGEX0 = "0000000[0-9]*";
+    private static final String REGEX9 = "9999999[0-9]*";
 
     public static void write(String data, String name) {
         try {
@@ -72,11 +73,11 @@ public class FileWriter {
     }
 
     public static String cleanupString(double value) {
-        return String.valueOf(value).replaceAll(REGEX, "");
+        return String.valueOf(value).replaceAll(REGEX0, "").replaceAll(REGEX9, "");
     }
 
     private static String cleanupString(int value) {
-        return String.valueOf(value).replaceAll(REGEX, "");
+        return String.valueOf(value).replaceAll(REGEX0, "");
     }
 
     private static String getTimestamp() {

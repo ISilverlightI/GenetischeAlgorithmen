@@ -13,8 +13,9 @@ public class Stopwatch {
         format = new SimpleDateFormat("HH:mm:ss");
     }
 
-    public void getTime(){
+    public String getTime(){
         System.out.println(format.format(new Date((System.currentTimeMillis() - startTime) - 3600000)));
+        return format.format(new Date((System.currentTimeMillis() - startTime) - 3600000)).toString();
     }
 
     public String getEstimatedTime(int readyThreads, int totalThreads){

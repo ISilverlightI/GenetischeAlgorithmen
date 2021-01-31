@@ -7,7 +7,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="609.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="exerciseTwo.Controller">
+<AnchorPane prefHeight="638.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="exerciseTwo.Controller">
     <children>
         <Button fx:id="optimizationStartButton" layoutX="306.0" layoutY="480.0" mnemonicParsing="false" onAction="#optimizationStart" prefHeight="26.0" prefWidth="147.0" text="find best values" />
         <ProgressBar fx:id="progressBar" layoutX="89.0" layoutY="516.0" prefHeight="18.0" prefWidth="405.0" progress="0.0" />
@@ -60,7 +60,7 @@
         <TextField fx:id="pc" alignment="CENTER" layoutX="190.0" layoutY="261.0" prefHeight="25.0" prefWidth="65.0" text="0.35" />
         <Label layoutX="41.0" layoutY="265.0" prefHeight="17.0" prefWidth="117.0" text="Rekombinationsrate:" />
         <Line endX="184.5" layoutX="109.0" layoutY="206.0" startX="-68.0" />
-        <Label fx:id="resultLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="76.0" layoutY="543.0" prefHeight="49.0" prefWidth="438.0" />
+        <Label fx:id="resultLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="76.0" layoutY="543.0" prefHeight="90.0" prefWidth="438.0" />
         <Label fx:id="sLabel" layoutX="495.0" layoutY="372.0" prefHeight="17.0" prefWidth="22.0" text="s:" visible="false" />
         <TextField fx:id="sValue" alignment="CENTER" layoutX="515.0" layoutY="368.0" prefHeight="25.0" prefWidth="65.0" text="2" visible="false" />
       <Button fx:id="normalStartButton" layoutX="136.0" layoutY="480.0" mnemonicParsing="false" onAction="#normalStart" prefHeight="26.0" prefWidth="141.0" text="normal run" />

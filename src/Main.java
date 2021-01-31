@@ -28,7 +28,8 @@ public class Main extends Application {
     private void startExerciseTwo(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("exerciseTwo/sample/ui.fxml"));
         primaryStage.setTitle("Genetische Algorithmen");
-        primaryStage.setScene(new Scene(root, 600, 600));
+        primaryStage.setScene(new Scene(root, 600, 64+
+                0));
         primaryStage.show();
     }
 
